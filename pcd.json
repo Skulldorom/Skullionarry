@@ -8,7 +8,7 @@
   ],
   "dependencies": {
     "https://github.com/Dictionarry-Hub/schema": "1.1.0",
-    "https://github.com/Dumpstarr/Database": "2.0.0"
+    "https://github.com/Dumpstarr/Database": "b395c01e46fabadde8828ade05f9d4f4f8c5d700"
   },
   "profilarr": {
     "minimum_version": "2.0.0"
