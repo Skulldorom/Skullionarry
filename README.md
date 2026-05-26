@@ -4,10 +4,8 @@ Template for creating your own Profilarr-compliant database (PCD).
 
 ## Quick Start
 
-1. Click **"Use this template"** → **"Create a new repository"**
-2. Link the repository in Profilarr
-3. Edit the manifest to customize your database
-4. Start creating profiles and custom formats
+
+1. Link the repository in Profilarr
 
 ## Structure
 

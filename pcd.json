@@ -1,14 +1,20 @@
 {
-    "name": "my-database",
-    "version": "1.0.0",
-    "description": "My custom Arr configurations",
-    "arr_types": ["radarr", "sonarr"],
-
-    "dependencies": {
-        "https://github.com/Dictionarry-Hub/schema": "1.1.0"
-    },
-
-    "profilarr": {
-        "minimum_version": "2.0.0"
-    }
+  "name": "skullionarry",
+  "version": "1.0.0",
+  "description": "Skulldoroms custom Arr configurations based on Dumpstarr",
+  "arr_types": [
+    "radarr",
+    "sonarr"
+  ],
+  "dependencies": {
+    "https://github.com/Dictionarry-Hub/schema": "1.1.0"
+  },
+  "profilarr": {
+    "minimum_version": "2.0.0"
+  },
+  "tags": [
+    "skullionarry",
+    "dumpstarr"
+  ],
+  "repository": "https://github.com/Skulldorom/Skullionarry"
 }
