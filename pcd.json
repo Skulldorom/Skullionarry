@@ -5,6 +5,7 @@
     "arr_types": ["radarr", "sonarr"],
 
     "dependencies": {
+        "https://github.com/Dumpstarr/Database": "2.0.0",
         "https://github.com/Dictionarry-Hub/schema": "1.1.0"
     },
 
