@@ -31,13 +31,14 @@ LOCAL_OPS_DIR = os.path.join(REPO_ROOT, "ops")
 STATE_FILE = os.path.join(REPO_ROOT, ".github", "upstream-sync-state.json")
 
 GITHUB_API_BASE = "https://api.github.com"
+GITHUB_API_VERSION = "2022-11-28"
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 
 NUMBER_RE = re.compile(r"^(\d+)\.(.*)")
 
 
 def api_headers():
-    headers = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
+    headers = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": GITHUB_API_VERSION}
     if GITHUB_TOKEN:
         headers["Authorization"] = "Bearer " + GITHUB_TOKEN
     return headers
@@ -45,8 +46,15 @@ def api_headers():
 
 def api_get(url):
     req = urllib.request.Request(url, headers=api_headers())
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read().decode())
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return json.loads(resp.read().decode())
+    except urllib.error.HTTPError as exc:
+        print(f"HTTP error {exc.code} fetching {url}: {exc.reason}", file=sys.stderr)
+        raise
+    except urllib.error.URLError as exc:
+        print(f"Network error fetching {url}: {exc.reason}", file=sys.stderr)
+        raise
 
 
 def list_upstream_files():
@@ -68,6 +76,8 @@ def list_upstream_files():
 
 def local_max_number():
     """Return the highest leading number among files currently in ops/."""
+    if not os.path.isdir(LOCAL_OPS_DIR):
+        raise FileNotFoundError(f"Local ops directory not found: {LOCAL_OPS_DIR}")
     max_num = 0
     for fname in os.listdir(LOCAL_OPS_DIR):
         m = NUMBER_RE.match(fname)
@@ -77,8 +87,15 @@ def local_max_number():
 
 
 def load_state():
-    with open(STATE_FILE) as f:
-        return json.load(f)
+    try:
+        with open(STATE_FILE) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"State file not found at {STATE_FILE}; using default.", file=sys.stderr)
+        return {"last_pulled_upstream_number": 0}
+    except json.JSONDecodeError as exc:
+        print(f"State file is malformed: {exc}", file=sys.stderr)
+        raise
 
 
 def save_state(state):
@@ -89,8 +106,15 @@ def save_state(state):
 
 def download_text(url):
     req = urllib.request.Request(url, headers=api_headers())
-    with urllib.request.urlopen(req) as resp:
-        return resp.read()
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return resp.read()
+    except urllib.error.HTTPError as exc:
+        print(f"HTTP error {exc.code} downloading {url}: {exc.reason}", file=sys.stderr)
+        raise
+    except urllib.error.URLError as exc:
+        print(f"Network error downloading {url}: {exc.reason}", file=sys.stderr)
+        raise
 
 
 def main():
@@ -105,8 +129,8 @@ def main():
         return 0
 
     current_local_max = local_max_number()
-    print(f"Last pulled upstream number : {last_pulled}")
-    print(f"Current local max number    : {current_local_max}")
+    print(f"Last pulled upstream number: {last_pulled}")
+    print(f"Current local max number   : {current_local_max}")
     print(f"New upstream files to import: {len(new_upstream)}")
 
     highest_upstream_pulled = last_pulled
